@@ -1,3 +1,4 @@
+
 import { validationResult } from "express-validator";
 
 export function runvalidation (req,res,next){   

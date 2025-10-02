@@ -31,7 +31,8 @@ app.use(cors({
 }));
 
 mongoose.set("strictQuery", true);
-mongoose.connect(process.env.DATABASE, {}).then(() => console.log("DB connected")).catch((err) => console.log("DB Error => ", err));
+// mongoose.connect(process.env.DATABASE, {}).then(() => console.log("DB connected")).catch((err) => console.log("DB Error => ", err));
+mongoose.connect(process.env.MONGO_URI, {}).then(() => console.log("DB connected")).catch((err) => console.log("DB Error => ", err));
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
