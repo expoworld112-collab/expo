@@ -1,465 +1,152 @@
-// import Head from 'next/head';
-// import { useEffect, useState } from 'react';
-// import Link from 'next/link';
-// import { singleBlog, listRelated, getAllBlogSlugs } from '../actions/blog';
-// import { DOMAIN, APP_NAME } from "../config";
-// import styles from "../styles/blogposts.module.css";
-// // import DisqusThread from '@/components/DisqusThread';
-// import SmallCard from '../components/blog/SmallCard';
-// import Layout from '@/components/Layout';
-// import Search from '@/components/blog/Search'; 
-// // import { format } from 'date-fns';
-// import { isAuth } from "../actions/auth";
-// import { format, utcToZonedTime } from 'date-fns-tz';
-
-
-// const SingleBlog0 = ({ blog, errorCode }) => {
-
-//     if (errorCode) {
-//         return (
-//             <Layout>
-//                 <div style={{ background: "black" }}>
-//                     <br /><br /><br />
-//                     <div className={styles.page404}>404 Error! Page Not Found</div>
-//                     <section className={styles.item0000}> <br /> <Search /> <br /><br /><br /></section>
-//                 </div>
-//             </Layout>
-//         );
-//     }
-
-//     const [related, setrelated] = useState([]);
-
-//     const fetchData = async () => {
-//         try {
-//             const data = await listRelated(blog.slug); setrelated(data);
-//         } catch (error) { console.error('Error fetching Blogs:', error); }
-//     };
-
-
-//     const [user, setUser] = useState(null);
-
-//     useEffect(() => { fetchData()}, [blog.slug]);
-//     useEffect(() => {setUser(isAuth()) }, []);
-
-//     const showRelatedBlog = () => {
-//         return (related && related.map((blog, i) => (
-//             <article key={i} className={styles.box}><SmallCard blog={blog} /></article>
-//         )))
-//     };
-
-
-
-//     const showBlogCategories = blog =>
-//         blog.categories.map((c, i) => (<Link key={i} href={`/categories/${c.slug}`} className={styles.blogcat}>{c.name}</Link>
-//         ));
-
-//     const showBlogTags = blog =>
-//         blog.tags.map((t, i) => (<Link key={i} href={`/tags/${t.slug}`} className={styles.blogtag}> {t.name}</Link>
-//         ));
-
-
-//     // const showComments = () => {return (<DisqusThread id={blog._id} title={blog.title} path={`/blog/${blog.slug}`} />);};
-
-//     const formattedDate = blog.formattedDate;
-
-//     const head = () => (
-//         <Head>
-//             <title >{`${blog.title} - ${APP_NAME}`}</title>
-//             <meta name="description" content={blog.mdesc} />
-//             <link rel="canonical" href={`${DOMAIN}/${blog.slug}`} />
-//             <meta property="og:title" content={`${blog.mtitle}| ${APP_NAME}`} />
-//             <meta property="og:description" content={blog.mdesc} />
-//             <meta property="og:type" content="webiste" />
-//             <meta name="robots" content="index, follow" />
-//             <meta property="og:url" content={`${DOMAIN}/${blog.slug}`} />
-//             <meta property="og:site_name" content={`${APP_NAME}`} />
-//             <meta property="og:image" content={blog.photo} />
-//             <meta property="og:image:secure_url" content={blog.photo} />
-//             <meta property="og:image:type" content="image/jpg" />
-//             <meta property="article:published_time" content={blog.date} />
-//             <meta property="article:modified_time" content={blog.date} />
-//         </Head>
-//     );
-
-
-
-
-
-//     return (
-
-//         <>
-//             {head()}
-//             <Layout >
-//                 {/* <Navbar blog={blog} /> */}
-//                 <main>
-//                     <article className={styles.backgroundImg}>
-//                         <br />
-
-
-//                         <section className={styles.mypost}>
-//                             <section className={styles.topsection}>
-
-//                                 {user && isAuth().role === 1 && (<div className={styles.editbutton}><a href={`${DOMAIN}/admin/${blog.slug}`}>Edit</a></div>)}
-
-//                                 <header>
-//                                     <h1 >{blog.title}</h1>
-
-//                                     <section className={styles.dateauth}>
-//                                         {formattedDate} &nbsp; by &nbsp;
-//                                         {blog.postedBy && blog.postedBy.name && blog.postedBy.username ? (
-//                                             <Link href={`/profile/${blog.postedBy.username}`} className={styles.author}>
-//                                                 {blog.postedBy.name}
-//                                             </Link>
-//                                         ) : (
-//                                             <span>User</span>
-//                                         )}
-
-//                                     </section>
-//                                 </header>
-
-//                                 <br />
-//                                 <section className={styles.imageContainer}>
-//                                     <div className={styles.aspectRatioContainer}>
-//                                         <img className={styles.resizeimg} src={blog.photo} alt={blog.title} />
-//                                     </div>
-//                                 </section>
-
-
-//                                 <br /><br />
-//                             </section>
-
-
-
-//                             <section className="postcontent">
-
-//                                 <div dangerouslySetInnerHTML={{ __html: blog.body }} />
-
-//                                 <div style={{ textAlign: "center" }}>
-//                                     <br /><br />
-//                                     {showBlogCategories(blog)}
-//                                     {showBlogTags(blog)}
-
-//                                 </div>
-//                             </section>
-//                         </section>
-//                         <br />
-//                         <br />
-
-
-//                         <section className={styles.mypost2} >
-//                             <br /> <br /> <br />
-//                             {/* <section className={styles.comments}> {showComments()} </section>  <br /> */}
-//                             <section className={styles.item0000}> <br /> <Search /> <br /> </section>
-//                             <section className={styles.grid}>{showRelatedBlog()}</section>
-//                             <br /> <br /><br /><br />
-//                         </section>
-
-//                     </article>
-//                 </main>
-//             </Layout>
-//         </>
-//     );
-
-// };
-
-
-
-// // export async function getStaticPaths() {
-// //     const slugs = await getAllBlogSlugs();
-// //     const excludedSlugs = ['/admin/edit-blogs', '/admin/blog', '/admin/edit-story', '/admin/web-story'];
-// //     const filteredSlugs = slugs.filter((slugObject) => !excludedSlugs.includes(slugObject.slug));
-// //     const paths = filteredSlugs.map((slugObject) => ({ params: { slug: slugObject.slug } }));
-// //     return { paths, fallback: "blocking" };
-// // }
-
-// // import { allslugs } from '../../lib/allslugs'; // adjust path as needed
-// import { allslugs } from '@/actions/story/allslugs.js';
-
-
-// export async function getStaticPaths() {
-//   const slugs = await allslugs();
-
-//   if (!Array.isArray(slugs)) {
-//     console.warn('Slugs not found or not an array. Returning empty paths.');
-//     return {
-//       paths: [],
-//       fallback: false,
-//     };
-//   }
-
-//   const paths = slugs
-//     .filter(slug => typeof slug === 'string') // safety check
-//     .map(slug => ({ params: { slug } }));
-
-//   return {
-//     paths,
-//     fallback: false,
-//   };
-// }
-// import { getAllBlogSlugs } from '../actions/blog';
-
-// export async function getStaticPaths() {
-//   const slugs = await getAllBlogSlugs(); // [{ slug: 'post-1' }, ...]
-
-//   if (!Array.isArray(slugs)) {
-//     console.warn('Slugs not found or not an array. Returning empty paths.');
-//     return { paths: [], fallback: false };
-//   }
-
-//   const paths = slugs
-//     .filter(slugObj => slugObj.slug && typeof slugObj.slug === 'string')
-//     .map(slugObj => ({ params: { slug: slugObj.slug } }));
-
-//   return {
-//     paths,
-//     fallback: false, // or 'blocking' if you want to handle new slugs at runtime
-//   };
-// }
-// import { getAllBlogSlugs } from '../actions/blog';
-
-// export async function getStaticPaths() {
-//   const slugs = await getAllBlogSlugs(); // [{ slug: 'post-1' }, ...]
-
-//   if (!Array.isArray(slugs)) {
-//     console.warn('Slugs not found or not an array. Returning empty paths.');
-//     return { paths: [], fallback: false };
-//   }
-
-//   const paths = slugs
-//     .filter(slugObj => slugObj.slug && typeof slugObj.slug === 'string')
-//     .map(slugObj => ({ params: { slug: slugObj.slug } }));
-
-//   return {
-//     paths,
-//     fallback: false, // or 'blocking' if you want to handle new slugs at runtime
-//   };
-// }
-
-
-
-// export async function getStaticProps({ params }) {
-//     try {
-//         const data = await singleBlog(params.slug);
-//         if (data.error) { return { props: { errorCode: 404 } }; }
-//         //   const formattedDate = format(new Date(data.date), 'dd MMMM, yyyy', { timeZone: 'Asia/Kolkata' });
-//         const utcDate = new Date(data.date);
-//         const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
-//         const formattedDate = format(istDate, 'dd MMM, yyyy', { timeZone: 'Asia/Kolkata' });
-
-//         return { props: { blog: { ...data, formattedDate } } };
-//     } catch (error) {
-//         console.error(error);
-//         return { props: { errorCode: 500 } };
-//     }
-// }
-
-// export default SingleBlog0;
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { singleBlog, listRelated, getAllBlogSlugs } from '../actions/blog';
-import { DOMAIN, APP_NAME } from "../config";
-import styles from "../styles/blogposts.module.css";
-import SmallCard from '../components/blog/SmallCard';
+import { DOMAIN, APP_NAME } from '../config';
+import styles from '../styles/blogposts.module.css';
+
 import Layout from '@/components/Layout';
 import Search from '@/components/blog/Search';
-import { isAuth } from "../actions/auth";
+import SmallCard from '@/components/blog/SmallCard';
+import { isAuth } from '../actions/auth';
 import { format, utcToZonedTime } from 'date-fns-tz';
 
 const SingleBlog = ({ blog, errorCode }) => {
-    const [related, setRelated] = useState([]);
-    const [user, setUser] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        const fetchRelated = async () => {
-            try {
-                const data = await listRelated(blog.slug);
-                setRelated(data);
-            } catch (error) {
-                console.error('Error fetching related blogs:', error);
-            }
-        };
+  useEffect(() => {
+    setUser(isAuth());
 
-        fetchRelated();
-    }, [blog.slug]);
+    const fetchRelated = async () => {
+      try {
+        const data = await listRelated(blog.slug);
+        setRelated(data || []);
+      } catch (err) {
+        console.error('Error fetching related blogs:', err);
+      }
+    };
 
-    useEffect(() => {
-        setUser(isAuth());
-    }, []);
+    fetchRelated();
+  }, [blog.slug]);
 
-    if (errorCode) {
-        return (
-            <Layout>
-                <div style={{ background: "black" }}>
-                    <br /><br /><br />
-                    <div className={styles.page404}>404 Error! Page Not Found</div>
-                    <section className={styles.item0000}><br /><Search /><br /><br /><br /></section>
-                </div>
-            </Layout>
-        );
-    }
-
-    const head = () => (
-        <Head>
-            <title>{`${blog.title} - ${APP_NAME}`}</title>
-            <meta name="description" content={blog.mdesc} />
-            <link rel="canonical" href={`${DOMAIN}/${blog.slug}`} />
-            <meta property="og:title" content={`${blog.mtitle} | ${APP_NAME}`} />
-            <meta property="og:description" content={blog.mdesc} />
-            <meta property="og:type" content="website" />
-            <meta name="robots" content="index, follow" />
-            <meta property="og:url" content={`${DOMAIN}/${blog.slug}`} />
-            <meta property="og:site_name" content={`${APP_NAME}`} />
-            <meta property="og:image" content={blog.photo} />
-            <meta property="og:image:secure_url" content={blog.photo} />
-            <meta property="og:image:type" content="image/jpg" />
-            <meta property="article:published_time" content={blog.date} />
-            <meta property="article:modified_time" content={blog.date} />
-        </Head>
-    );
-
-    const showBlogCategories = () =>
-        blog.categories.map((c, i) => (
-            <Link key={i} href={`/categories/${c.slug}`} className={styles.blogcat}>
-                {c.name}
-            </Link>
-        ));
-
-    const showBlogTags = () =>
-        blog.tags.map((t, i) => (
-            <Link key={i} href={`/tags/${t.slug}`} className={styles.blogtag}>
-                {t.name}
-            </Link>
-        ));
-
-    const showRelatedBlogs = () =>
-        related.map((relatedBlog, i) => (
-            <article key={i} className={styles.box}>
-                <SmallCard blog={relatedBlog} />
-            </article>
-        ));
-
+  if (errorCode) {
     return (
-        <>
-            {head()}
-            <Layout>
-                <main>
-                    <article className={styles.backgroundImg}>
-                        <br />
-                        <section className={styles.mypost}>
-                            <section className={styles.topsection}>
-                                {user && user.role === 1 && (
-                                    <div className={styles.editbutton}>
-                                        <a href={`${DOMAIN}/admin/${blog.slug}`}>Edit</a>
-                                    </div>
-                                )}
-                                <header>
-                                    <h1>{blog.title}</h1>
-                                    <section className={styles.dateauth}>
-                                        {blog.formattedDate} &nbsp; by &nbsp;
-                                        {blog.postedBy?.username ? (
-                                            <Link href={`/profile/${blog.postedBy.username}`} className={styles.author}>
-                                                {blog.postedBy.name}
-                                            </Link>
-                                        ) : (
-                                            <span>User</span>
-                                        )}
-                                    </section>
-                                </header>
-                                <br />
-                                <section className={styles.imageContainer}>
-                                    <div className={styles.aspectRatioContainer}>
-                                        <img className={styles.resizeimg} src={blog.photo} alt={blog.title} />
-                                    </div>
-                                </section>
-                                <br /><br />
-                            </section>
-
-                            <section className="postcontent">
-                                <div dangerouslySetInnerHTML={{ __html: blog.body }} />
-                                <div style={{ textAlign: "center" }}>
-                                    <br /><br />
-                                    {showBlogCategories()}
-                                    {showBlogTags()}
-                                </div>
-                            </section>
-                        </section>
-
-                        <br /><br />
-
-                        <section className={styles.mypost2}>
-                            <br /><br /><br />
-                            <section className={styles.item0000}>
-                                <br /><Search /><br />
-                            </section>
-                            <section className={styles.grid}>{showRelatedBlogs()}</section>
-                            <br /><br /><br /><br />
-                        </section>
-                    </article>
-                </main>
-            </Layout>
-        </>
+      <Layout>
+        <div style={{ background: 'black' }}>
+          <br /><br /><br />
+          <div className={styles.page404}>404 Error! Page Not Found</div>
+          <section className={styles.item0000}><br /><Search /><br /><br /><br /></section>
+        </div>
+      </Layout>
     );
-};
-
-// export async function getStaticPaths() {
-//     const slugs = await getAllBlogSlugs(); // Example: [{ slug: 'post-1' }, ...]
-
-//     if (!Array.isArray(slugs)) {
-//         console.warn('Slugs not found or not an array. Returning empty paths.');
-//         return { paths: [], fallback: false };
-//     }
-
-//     const paths = slugs
-//         .filter(slugObj => slugObj.slug && typeof slugObj.slug === 'string')
-//         .map(slugObj => ({ params: { slug: slugObj.slug } }));
-
-//     return {
-//         paths,
-//         fallback: false, // or 'blocking' if you prefer ISR
-//     };
-// }
-export async function getStaticPaths() {
-  const slugs = await getAllBlogSlugs();
-  console.log("⚙️ slugs in getStaticPaths:", slugs);
-
-  if (!Array.isArray(slugs)) {
-    console.warn('Slugs is not an array:', slugs);
-    return { paths: [], fallback: false };
   }
 
-  const paths = slugs
-    .filter(obj => obj && typeof obj.slug === 'string')
-    .map(obj => ({ params: { slug: obj.slug } }));
+  const head = () => (
+    <Head>
+      <title>{`${blog.title} - ${APP_NAME}`}</title>
+      <meta name="description" content={blog.mdesc} />
+      <link rel="canonical" href={`${DOMAIN}/${blog.slug}`} />
+      <meta property="og:title" content={`${blog.mtitle} | ${APP_NAME}`} />
+      <meta property="og:description" content={blog.mdesc} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={`${DOMAIN}/${blog.slug}`} />
+      <meta property="og:site_name" content={APP_NAME} />
+      <meta property="og:image" content={blog.photo} />
+      <meta property="og:image:secure_url" content={blog.photo} />
+      <meta property="og:image:type" content="image/jpg" />
+      <meta property="article:published_time" content={blog.date} />
+      <meta property="article:modified_time" content={blog.date} />
+    </Head>
+  );
 
-  console.log("⚙️ paths generated:", paths);
+  const showCategories = () =>
+    blog.categories.map((c, i) => (
+      <Link key={i} href={`/categories/${c.slug}`} className={styles.blogcat}>
+        {c.name}
+      </Link>
+    ));
 
-  return {
-    paths,
-    fallback: false,
-  };
-}
+  const showTags = () =>
+    blog.tags.map((t, i) => (
+      <Link key={i} href={`/tags/${t.slug}`} className={styles.blogtag}>
+        {t.name}
+      </Link>
+    ));
 
-export async function getStaticProps({ params }) {
-    try {
-        const data = await singleBlog(params.slug);
-        if (data.error) {
-            return { props: { errorCode: 404 } };
-        }
+  const showRelatedBlogs = () =>
+    related.map((relatedBlog, i) => (
+      <article key={i} className={styles.box}>
+        <SmallCard blog={relatedBlog} />
+      </article>
+    ));
 
-        const utcDate = new Date(data.date);
-        const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
-        const formattedDate = format(istDate, 'dd MMM, yyyy', { timeZone: 'Asia/Kolkata' });
+  return (
+    <>
+      {head()}
+      <Layout>
+        <main>
+          <article className={styles.backgroundImg}>
+            <br />
 
-        return {
-            props: {
-                blog: { ...data, formattedDate }
-            }
-        };
-    } catch (error) {
-        console.error(error);
-        return { props: { errorCode: 500 } };
-    }
-}
+            <section className={styles.mypost}>
+              <section className={styles.topsection}>
+                {user?.role === 1 && (
+                  <div className={styles.editbutton}>
+                    <a href={`${DOMAIN}/admin/${blog.slug}`}>Edit</a>
+                  </div>
+                )}
+
+                <header>
+                  <h1>{blog.title}</h1>
+                  <section className={styles.dateauth}>
+                    {blog.formattedDate} &nbsp; by &nbsp;
+                    {blog.postedBy?.username ? (
+                      <Link href={`/profile/${blog.postedBy.username}`} className={styles.author}>
+                        {blog.postedBy.name}
+                      </Link>
+                    ) : (
+                      <span>User</span>
+                    )}
+                  </section>
+                </header>
+
+                <br />
+                <section className={styles.imageContainer}>
+                  <div className={styles.aspectRatioContainer}>
+                    <img className={styles.resizeimg} src={blog.photo} alt={blog.title} />
+                  </div>
+                </section>
+                <br /><br />
+              </section>
+
+              <section className="postcontent">
+                <div dangerouslySetInnerHTML={{ __html: blog.body }} />
+                <div style={{ textAlign: 'center' }}>
+                  <br /><br />
+                  {showCategories()}
+                  {showTags()}
+                </div>
+              </section>
+            </section>
+
+            <br /><br />
+
+            <section className={styles.mypost2}>
+              <br /><br /><br />
+              <section className={styles.item0000}>
+                <br />
+                <Search />
+                <br />
+              </section>
+              <section className={styles.grid}>{showRelatedBlogs()}</section>
+              <br /><br /><br /><br />
+            </section>
+          </article>
+        </main>
+      </Layout>
+    </>
+  );
+};
 
 export default SingleBlog;
