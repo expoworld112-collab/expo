@@ -172,7 +172,9 @@ const SingleBlog0 = ({ blog, errorCode }) => {
 //     return { paths, fallback: "blocking" };
 // }
 
-import { allslugs } from '../../lib/allslugs'; // adjust path as needed
+// import { allslugs } from '../../lib/allslugs'; // adjust path as needed
+import { allslugs } from '../../lib/allslugs'; // Adjust if needed
+
 
 export async function getStaticPaths() {
   const slugs = await allslugs();
