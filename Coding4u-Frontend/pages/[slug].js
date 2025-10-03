@@ -164,14 +164,36 @@ const SingleBlog0 = ({ blog, errorCode }) => {
 
 
 
-export async function getStaticPaths() {
-    const slugs = await getAllBlogSlugs();
-    const excludedSlugs = ['/admin/edit-blogs', '/admin/blog', '/admin/edit-story', '/admin/web-story'];
-    const filteredSlugs = slugs.filter((slugObject) => !excludedSlugs.includes(slugObject.slug));
-    const paths = filteredSlugs.map((slugObject) => ({ params: { slug: slugObject.slug } }));
-    return { paths, fallback: "blocking" };
-}
+// export async function getStaticPaths() {
+//     const slugs = await getAllBlogSlugs();
+//     const excludedSlugs = ['/admin/edit-blogs', '/admin/blog', '/admin/edit-story', '/admin/web-story'];
+//     const filteredSlugs = slugs.filter((slugObject) => !excludedSlugs.includes(slugObject.slug));
+//     const paths = filteredSlugs.map((slugObject) => ({ params: { slug: slugObject.slug } }));
+//     return { paths, fallback: "blocking" };
+// }
 
+import { allslugs } from '../../lib/allslugs'; // adjust path as needed
+
+export async function getStaticPaths() {
+  const slugs = await allslugs();
+
+  if (!Array.isArray(slugs)) {
+    console.warn('Slugs not found or not an array. Returning empty paths.');
+    return {
+      paths: [],
+      fallback: false,
+    };
+  }
+
+  const paths = slugs
+    .filter(slug => typeof slug === 'string') // safety check
+    .map(slug => ({ params: { slug } }));
+
+  return {
+    paths,
+    fallback: false,
+  };
+}
 
 
 export async function getStaticProps({ params }) {

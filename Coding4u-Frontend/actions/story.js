@@ -42,16 +42,39 @@ export const list = async() => {
 };
 
 
-export const allslugs = async() => {
-    try {
-        const response = await fetch(`${API}/allslugs`, {
-            method: 'GET'
-        });
-        return await response.json();
-    } catch (err) {
-        return console.log(err);
+// export const allslugs = async() => {
+//     try {
+//         const response = await fetch(`${API}/allslugs`, {
+//             method: 'GET'
+//         });
+//         return await response.json();
+//     } catch (err) {
+//         return console.log(err);
+//     }
+// };
+export async function allslugs() {
+  try {
+    const res = await fetch(process.env.API_URL + '/api/slugs'); // Example URL
+
+    if (!res.ok) {
+      console.error(`Failed to fetch slugs: ${res.status} ${res.statusText}`);
+      return []; // fallback
     }
-};
+
+    const data = await res.json();
+    
+    // Ensure the data is an array or return empty fallback
+    if (!Array.isArray(data)) {
+      console.error('Slugs response is not an array:', data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error in allslugs():', error);
+    return []; // fallback to avoid breaking build
+  }
+}
 
 
 
