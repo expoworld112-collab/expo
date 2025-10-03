@@ -266,6 +266,47 @@ const paths = filteredSlugs.map((slugObject) => ({ params: { slug: slugObject.sl
 
 return { paths, fallback: "blocking" };
 }
+export async function getStaticPaths() {
+  try {
+    const res = await fetch(process.env.API_BASE_URL + '/api/slugs'); // Replace with your real endpoint
+
+    if (!res.ok) {
+      console.error(`Failed to fetch slugs. Status: ${res.status}`);
+      return {
+        paths: [],
+        fallback: false,
+      };
+    }
+
+    const slugs = await res.json();
+
+    if (!Array.isArray(slugs)) {
+      console.error('Expected slugs to be an array, got:', slugs);
+      return {
+        paths: [],
+        fallback: false,
+      };
+    }
+
+    const paths = slugs
+      .filter(slug => typeof slug === 'string' || (slug && slug.slug))
+      .map(slug => ({
+        params: { slug: typeof slug === 'string' ? slug : slug.slug }
+      }));
+
+    return {
+      paths,
+      fallback: false,
+    };
+  } catch (error) {
+    console.error('Error in getStaticPaths:', error.message);
+    return {
+      paths: [],
+      fallback: false,
+    };
+  }
+}
+
 
 
 export async function getStaticProps({ params, res }) {
@@ -283,3 +324,4 @@ export async function getStaticProps({ params, res }) {
 }
 
 export default Stories;
+
