@@ -3,9 +3,9 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import Search from '@/components/blog/Search';
-import { DOMAIN, APP_NAME } from '../../config';
-import { getWebStoryBySlug, getAllWebStorySlugs } from '../../actions/webStories';
-import styles from '../../styles/webStory.module.css';
+import { DOMAIN, APP_NAME } from '../config'
+import { getWebStoryBySlug, getAllWebStorySlugs } from '../actions/story'
+import styles from '../styles/stories.module.css'
 
 // --- Component ---
 const SingleWebStory = ({ story }) => {

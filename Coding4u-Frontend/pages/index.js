@@ -97,8 +97,10 @@ export async function getStaticProps() {
   export async function getStaticProps() {
     try {
       const data = await listBlogsWithCategoriesAndTags();
-      const formattedBlogs = data.blogs.map(blog => {
-        const utcDate = new Date(blog.date);
+      console.log(data);
+      
+      const formattedBlogs = data?.blogs.map(blog => {
+        const utcDate = new Date(blog?.date);
         const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
         const formattedDate = format(istDate, 'dd MMM, yyyy', { timeZone: 'Asia/Kolkata' });
         return { ...blog, formattedDate };
