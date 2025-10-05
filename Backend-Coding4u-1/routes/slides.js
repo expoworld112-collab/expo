@@ -63,6 +63,47 @@
 
 // // ✅ ✅ ADD THIS LINE TO FIX VERCEL CRASH
 // export default router;
+// import express from "express";
+// import {
+//   createWebStory,
+//   fetchWebStoryBySlug,
+//   allstories,
+//   deletestory,
+//   updateStory,
+//   sitemap,
+//   allslugs,
+// } from "../controllers/webstories.js";
+// import { requireSignin, adminMiddleware } from "../controllers/auth.js";
+
+// const router = express.Router();
+
+// // Create a new web story (Admin only)
+// router.post("/webstory", requireSignin, adminMiddleware, createWebStory);
+
+// // Fetch a single web story by slug
+// router.get("/webstories/:slug", fetchWebStoryBySlug);
+
+// // Fetch all web stories
+// router.get("/allwebstories", allstories);
+
+// // Fetch all slugs for frontend (e.g., for getStaticPaths in Next.js)
+// router.get("/allslugs", allslugs);
+// router.get("/web-stories-slugs", allslugs); // Alias (optional but useful)
+
+// // Sitemap generation
+// router.get("/sitemap", sitemap);
+
+// // Delete a story (Admin only)
+// router.delete("/webstorydelete/:slug", requireSignin, adminMiddleware, deletestory);
+
+// // Update a story (Admin only)
+// router.patch("/webstoriesupdate/:slug", requireSignin, adminMiddleware, updateStory);
+
+// // Export the router to be used in your main index.js
+// export default router;
+
+
+
 import express from "express";
 import {
   createWebStory,
@@ -86,11 +127,11 @@ router.get("/webstories/:slug", fetchWebStoryBySlug);
 // Fetch all web stories
 router.get("/allwebstories", allstories);
 
-// Fetch all slugs for frontend (e.g., for getStaticPaths in Next.js)
+// Fetch all slugs (for Next.js getStaticPaths or similar)
 router.get("/allslugs", allslugs);
-router.get("/web-stories-slugs", allslugs); // Alias (optional but useful)
+router.get("/web-stories-slugs", allslugs); // Optional alias
 
-// Sitemap generation
+// Sitemap
 router.get("/sitemap", sitemap);
 
 // Delete a story (Admin only)
@@ -99,5 +140,5 @@ router.delete("/webstorydelete/:slug", requireSignin, adminMiddleware, deletesto
 // Update a story (Admin only)
 router.patch("/webstoriesupdate/:slug", requireSignin, adminMiddleware, updateStory);
 
-// Export the router to be used in your main index.js
+// ✅ ✅ Required for Vercel / ESM builds
 export default router;
