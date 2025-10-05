@@ -94,23 +94,39 @@ export async function getStaticProps() {
   }
   */
 
-  export async function getStaticProps() {
-    try {
-      const data = await listBlogsWithCategoriesAndTags();
-      console.log(data);
+  // export async function getStaticProps() {
+  //   try {
+  //     const data = await listBlogsWithCategoriesAndTags();
+  //     console.log(data);
       
-      const formattedBlogs = data?.blogs.map(blog => {
-        const utcDate = new Date(blog?.date);
-        const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
-        const formattedDate = format(istDate, 'dd MMM, yyyy', { timeZone: 'Asia/Kolkata' });
-        return { ...blog, formattedDate };
-      });
-      return { props: { blogs: formattedBlogs } };
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      return { props: { blogs: [] } };
-    }
+  //     const formattedBlogs = data?.blogs.map(blog => {
+  //       const utcDate = new Date(blog?.date);
+  //       const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
+  //       const formattedDate = format(istDate, 'dd MMM, yyyy', { timeZone: 'Asia/Kolkata' });
+  //       return { ...blog, formattedDate };
+  //     });
+  //     return { props: { blogs: formattedBlogs } };
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     return { props: { blogs: [] } };
+  //   }
+  // }
+export async function getStaticProps() {
+  try {
+    const res = await fetch(`${process.env.API_URL}/api/some-data`);
+    if (!res.ok) throw new Error(`Failed to fetch data: ${res.status}`);
+    const data = await res.json();
+
+    return {
+      props: { data },
+    };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return {
+      props: { data: [] }, // fallback empty array or default data
+    };
   }
+}
 
   
 export default Index;
