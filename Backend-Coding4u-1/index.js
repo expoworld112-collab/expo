@@ -164,7 +164,7 @@ const app = express();
 
 // Middleware: CORS
 app.use(cors({
-  origin: ["http://localhost:3000", FRONTEND],
+  origin: ["http://localhost:3000", FRONTEND ," https:expo-xjj9.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true,
 }));
