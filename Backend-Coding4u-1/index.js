@@ -11,7 +11,9 @@ import categoryRoutes from "./routes/category.js";
 import tagRoutes from "./routes/tag.js";
 import formRoutes from "./routes/form.js";
 import ImageRoutes from "./routes/images.js";
-import storyRoutes from "./routes/slides.js";
+// import storyRoutes from "./routes/slides.js";
+import * as storyRoutes from "./routes/slides.js";
+
 import "dotenv/config.js";
 import session from "express-session";
 import passport from "passport";
