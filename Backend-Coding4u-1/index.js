@@ -294,7 +294,8 @@ import categoryRoutes from "./routes/category.js";
 import tagRoutes from "./routes/tag.js";
 import formRoutes from "./routes/form.js";
 import ImageRoutes from "./routes/images.js";
-import storyRoutes from "./routes/slides.js"; // default import
+// import storyRoutes from "./routes/slides.js"; // default import
+import storyRoutes from "./routes/slides.js";
 
 import "dotenv/config.js";
 import session from "express-session";
@@ -312,7 +313,6 @@ app.use(
     origin: [
       "http://localhost:3000",
       FRONTEND,
-      "https://expo-sable-one.vercel.app/",
     ],
     methods: "GET,POST,PUT,DELETE,PATCH",
     credentials: true,
