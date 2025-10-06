@@ -1,9 +1,11 @@
 // export const API = "https://expo-ashen-two.vercel.app/api";
 // export const BACKEND = "https:expo-ashen-two.vercel.app";
 // export const DOMAIN = "https://expoworld-frontend.vercel.app";
-export const API = "https://expo-brown.vercel.app";
+// export const API = "https://expo-brown.vercel.app";
+export const API = process.env.NEXT_PUBLIC_API || "https://expo-brown.vercel.app";
+
 export const BACKEND = "https://expo-brown.vercel.app";
-export const DOMAIN = "https://expo-xjj9.vercel.app/";
+export const DOMAIN = "https://expo-xjj9.vercel.app";
 
 
 //export const API = 'http://localhost:8000/api';
