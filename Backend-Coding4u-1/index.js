@@ -312,7 +312,7 @@ app.use(cors({
 
     const allowedOrigins = [
       "http://localhost:3000",
-      FRONTEND , " https:expo-xjj9.vercel.app"
+      FRONTEND , " coding4u-frontend.vercel.app"
     ];
 
     const isAllowed = allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin);
