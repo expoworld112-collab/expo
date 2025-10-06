@@ -306,16 +306,20 @@ import storyRoutes from "./routes/slides.js"; // ✅ default export
 const app = express();
 
 // ✅ Fixed CORS configuration
+
+
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Allow non-browser requests (e.g., Postman)
+    if (!origin) return callback(null, true); // Allow non-browser (e.g. Postman)
 
     const allowedOrigins = [
       "http://localhost:3000",
-      FRONTEND , " coding4u-frontend.vercel.app"
+      FRONTEND,
+      "https://coding4u-frontend.vercel.app"
     ];
 
-    const isAllowed = allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin);
+    const hostname = new URL(origin).hostname;
+    const isAllowed = allowedOrigins.includes(origin) || /\.vercel\.app$/.test(hostname);
 
     if (isAllowed) {
       callback(null, true);
