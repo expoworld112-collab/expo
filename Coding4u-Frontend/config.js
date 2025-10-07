@@ -1,5 +1,5 @@
 
-export const API = 'https://backend-coding4u-1.vercel.app/api';
+export const API = "https://backend-coding4u-1.vercel.app/api";
 
 export const BACKEND = "https://backend-coding4u-1.vercel.app";
 export const DOMAIN = "https:coding4u-frontend.vercel.app";
