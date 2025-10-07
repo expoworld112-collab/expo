@@ -60,70 +60,7 @@ export const preSignup = async (req, res) => {
     }
 };
 
-/*
-export const preSignup = async (req, res) => {
-    try {
-        const { name, email, username, password } = req.body;
-        const existingUser = await User.findOne({ email: email.toLowerCase() });
-        if (existingUser) { return res.status(400).json({ error: 'Email is taken' }); }
-        const token = jwt.sign({ name, username, email, password }, process.env.JWT_ACCOUNT_ACTIVATION, { expiresIn: '10m' });
 
-        const emailData = {
-            from: process.env.EMAIL_FROM,
-            to: email,
-            subject: 'Account activation link',
-            html: `
-            <p>Please use the following link to activate your account:</p>
-            <p>${process.env.MAIN_URL}/auth/account/activate/${token}</p>
-            <hr />
-            `
-        };
-        await sgMail.send(emailData);
-        res.json({ message: `Email has been sent to ${email}. Follow the instructions to activate your account.` });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({ error: errorHandler(err) });
-    }
-};
-*/
-
-
-
-/*
-export const signup = async (req, res) => {
-    try {
-        const emailExists = await User.findOne({ email: req.body.email });
-        if (emailExists) {
-            return res.status(400).json({
-                error: 'Email is taken'
-            });
-        }
-
-        const usernameExists = await User.findOne({ username: req.body.username });
-        if (usernameExists) {
-            return res.status(400).json({
-                error: 'Username is taken'
-            });
-        }
-
-        const { name, username, email, password } = req.body;
-
-        let usernameurl = username.toLowerCase();
-        let profile = `${process.env.CLIENT_URL}/profile/${usernameurl}`;
-
-        const newUser = new User({ name, username, email, password, profile });
-        await newUser.save();
-
-        res.json({
-            message: 'Signup success! Please signin.'
-        });
-    } catch (err) {
-        return res.status(400).json({
-            error: err.message
-        });
-    }
-};
-*/
 
 export const signup = async (req, res) => {
     const token = req.body.token;
@@ -307,44 +244,3 @@ export const resetPassword = async (req, res) => {
     }
 };
 
-
-/*
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-export const googleLogin = (req, res) => {
-    const idToken = req.body.tokenId;
-    client.verifyIdToken({ idToken, audience: process.env.GOOGLE_CLIENT_ID }).then(response => {
-        const { email_verified, name, email, jti } = response.payload;
-        if (email_verified) {
-            User.findOne({ email }).exec((err, user) => {
-                if (user) {
-                    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-                    res.cookie('token', token, { expiresIn: '1d' });
-                    const { _id, email, name, role, username } = user;
-                    return res.json({ token, user: { _id, email, name, role, username } });
-                } else {
-                    // let username = shortId.generate();
-                    // let profile = `${process.env.CLIENT_URL}/profile/${username}`;
-                    let password = jti;
-                    user = new User({ name, email, profile, username, password });
-                    user.save((err, data) => {
-                        if (err) {
-                            return res.status(400).json({
-                                error: errorHandler(err)
-                            });
-                        }
-                        const token = jwt.sign({ _id: data._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-                        res.cookie('token', token, { expiresIn: '1d' });
-                        const { _id, email, name, role, username } = data;
-                        return res.json({ token, user: { _id, email, name, role, username } });
-                    });
-                }
-            });
-        } else {
-            return res.status(400).json({
-                error: 'Google login failed. Try again.'
-            });
-        }
-    });
-};
-*/
