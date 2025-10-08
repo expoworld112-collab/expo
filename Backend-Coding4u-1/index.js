@@ -23,6 +23,13 @@ import tagRoutes from "./routes/tag.js";
 import formRoutes from "./routes/form.js";
 import imageRoutes from "./routes/images.js";
 import storyRoutes from "./routes/slides.js";
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://coding4u-frontend.vercel.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.sendStatus(204);
+});
 
 const app = express();
 
