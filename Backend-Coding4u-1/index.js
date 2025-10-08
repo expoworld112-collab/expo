@@ -10,11 +10,9 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth2";
 import jwt from "jsonwebtoken";
 import "dotenv/config.js";
 
-// Models & Config
 import User from "./models/user.js";
 import { FRONTEND } from "./config.js";
 
-// Routes
 import blogRoutes from "./routes/blog.js";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
@@ -24,17 +22,16 @@ import formRoutes from "./routes/form.js";
 import imageRoutes from "./routes/images.js";
 import storyRoutes from "./routes/slides.js";
 
-// ✅ Initialize app
 const app = express();
 
-// ✅ Logger
+// Logger
 app.use(morgan("dev"));
 
-// ✅ Middleware
+// Body parsing etc.
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// ✅ CORS Setup
+// CORS Setup
 const allowedOrigins = [
   "http://localhost:3000",
   FRONTEND,
@@ -43,30 +40,39 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Allow tools like Postman
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-      console.log("✅ CORS allowed for:", origin);
       return callback(null, true);
-    } else {
-      console.warn("❌ CORS blocked for:", origin);
-      return callback(new Error("Not allowed by CORS: " + origin));
     }
+    return callback(new Error("Not allowed by CORS: " + origin));
   },
   credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
 
-// ✅ MongoDB
+// Explicitly handle preflight
+app.options("*", cors(corsOptions));
+
+// (Optional) fallback headers (in case something is dropped)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", req.header("Origin") || FRONTEND);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, X-Requested-With");
+  next();
+});
+
+// Connect DB
 mongoose.set("strictQuery", true);
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.error("❌ MongoDB connection error:", err));
+  .catch((err) => console.error("❌ DB connection error:", err));
 
-// ✅ Sessions
+// Session & Passport
 app.use(session({
   secret: process.env.GOOGLE_CLIENT_SECRET,
   resave: false,
@@ -77,8 +83,6 @@ app.use(session({
     httpOnly: true
   }
 }));
-
-// ✅ Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -86,7 +90,7 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: "/auth/google/callback",
-  scope: ["profile", "email"],
+  scope: ["profile", "email"]
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const user = await User.findOne(
@@ -102,7 +106,7 @@ passport.use(new GoogleStrategy({
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
 
-// ✅ Routes
+// Routes
 app.use("/api", blogRoutes);
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
@@ -112,7 +116,7 @@ app.use("/api", formRoutes);
 app.use("/api", imageRoutes);
 app.use("/api", storyRoutes);
 
-// ✅ Auth
+// Auth endpoints
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 app.get("/auth/google/callback", passport.authenticate("google", {
   successRedirect: FRONTEND,
@@ -132,20 +136,24 @@ app.get("/logout", (req, res, next) => {
   });
 });
 
-// ✅ Root route
+// Root
 app.get("/", (req, res) => {
   res.json({ message: "✅ Backend is live" });
 });
 
-// ✅ CORS error handler
+// Error handler (with CORS safety)
 app.use((err, req, res, next) => {
+  // Always ensure response has CORS headers
+  res.header("Access-Control-Allow-Origin", req.header("Origin") || FRONTEND);
+  res.header("Access-Control-Allow-Credentials", "true");
   if (err.message && err.message.includes("Not allowed by CORS")) {
     return res.status(403).json({ message: err.message });
   }
-  next(err);
+  console.error("Server error:", err);
+  res.status(500).json({ error: "Internal Server Error" });
 });
 
-// ✅ Local Dev Server
+// If local dev
 const port = process.env.PORT || 8000;
 if (process.env.NODE_ENV !== "production") {
   app.listen(port, () => {
@@ -153,5 +161,4 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-// ✅ Export for Vercel
 export default app;

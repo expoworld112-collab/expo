@@ -1,9 +1,17 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.js", "use": "@vercel/node" }
-  ],
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/index.js",
+      "methods": ["GET","POST","OPTIONS","PUT","DELETE","PATCH"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://coding4u-frontend.vercel.app",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      }
+    },
     {
       "src": "/(.*)",
       "dest": "/index.js"
