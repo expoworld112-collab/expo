@@ -37,7 +37,7 @@ export const handleResponse = response => {
 
 export const preSignup = async (user) => {
   try {
-    const res = await fetch("https://expo-brown.vercel.app/api/pre-signup", {
+    const res = await fetch("backend-coding4u-1.vercel.app/api/pre-signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
