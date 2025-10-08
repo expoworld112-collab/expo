@@ -19,9 +19,26 @@ export const handleResponse = response => {
 
 
 
+// export const preSignup = async (user) => {
+//   try {
+//     const res = await fetch("backend-coding4u-1.vercel.app/api/pre-signup", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(user),
+//     });
+
+//     return await res.json();
+//   } catch (err) {
+//     console.error("❌ Error in preSignup:", err);
+//     return { error: "Something went wrong. Please try again." };
+//   }
+// };
+
 export const preSignup = async (user) => {
   try {
-    const res = await fetch("backend-coding4u-1.vercel.app/api/pre-signup", {
+    const res = await fetch(`${API}/pre-signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,13 +46,16 @@ export const preSignup = async (user) => {
       body: JSON.stringify(user),
     });
 
+    if (!res.ok) {
+      throw new Error(`Server responded with ${res.status}`);
+    }
+
     return await res.json();
   } catch (err) {
     console.error("❌ Error in preSignup:", err);
     return { error: "Something went wrong. Please try again." };
   }
 };
-
 
 export const signup = async user => {
     try {
