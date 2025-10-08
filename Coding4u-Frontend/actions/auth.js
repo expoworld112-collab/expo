@@ -17,21 +17,41 @@ export const handleResponse = response => {
 };
 
 
-export const preSignup = async user => {
-    try {
-        const response = await fetch(`${API}/pre-signup`, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        });
-        return await response.json();
-    } catch (err) {
-        return console.log(err);
-    }
+// export const preSignup = async user => {
+//     try {
+//         const response = await fetch(`${API}/pre-signup`, {
+//             method: 'POST',
+//             headers: {
+//                 Accept: 'application/json',
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify(user)
+//         });
+//         return await response.json();
+//     } catch (err) {
+//         return console.log(err);
+//     }
+// };
+
+// /actions/auth.js
+
+export const preSignup = async (user) => {
+  try {
+    const res = await fetch("https://expo-brown.vercel.app/api/pre-signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+
+    return await res.json();
+  } catch (err) {
+    console.error("❌ Error in preSignup:", err);
+    return { error: "Something went wrong. Please try again." };
+  }
 };
+
 
 export const signup = async user => {
     try {
