@@ -4,13 +4,7 @@
     {
       "src": "/api/(.*)",
       "dest": "/index.js",
-      "methods": ["GET","POST","OPTIONS","PUT","DELETE","PATCH"],
-      "headers": {
-        "Access-Control-Allow-Origin": "https://coding4u-frontend.vercel.app",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
-      }
+      "methods": ["GET","POST","OPTIONS","PUT","DELETE","PATCH"]
     },
     {
       "src": "/(.*)",
