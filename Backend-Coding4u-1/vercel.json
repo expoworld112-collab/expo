@@ -1,4 +1,3 @@
-
 {
   "version": 2,
   "name": "Blog Website",
@@ -6,6 +5,16 @@
     { "src": "index.js", "use": "@vercel/node" }
   ],
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://coding4u-frontend.vercel.app",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+      },
+      "dest": "/index.js"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.js"
