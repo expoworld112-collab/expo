@@ -62,71 +62,36 @@ const Index = ({ blogs }) => {
         </>
     );
 }
+console.log("API_URL:", process.env.API_URL);
 
 
-// export async function getStaticProps() {
-//     try {
-//         const data = await listBlogsWithCategoriesAndTags();
-//         return { props: { blogs: data.blogs }};
-//     } catch (error) {
-//         console.error("Error fetching data:", error);
-//         return { props: { blogs: [] }, };
-//     }
-// }
-
-/*
-export async function getStaticProps() {
-    try {
-      const data = await listBlogsWithCategoriesAndTags();
 
 
-      const utcDate = new Date(data.date);
-      const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
-      const formattedDate = format(istDate, 'dd MMM, yyyy', { timeZone: 'Asia/Kolkata' });
 
-      const formattedBlogs = data.blogs.map(blog => ({...blog, formattedDate}));
 
-      return { props: { blogs: formattedBlogs } };
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      return { props: { blogs: [] } };
-    }
-  }
-  */
 
-  // export async function getStaticProps() {
-  //   try {
-  //     const data = await listBlogsWithCategoriesAndTags();
-  //     console.log(data);
-      
-  //     const formattedBlogs = data?.blogs.map(blog => {
-  //       const utcDate = new Date(blog?.date);
-  //       const istDate = utcToZonedTime(utcDate, 'Asia/Kolkata');
-  //       const formattedDate = format(istDate, 'dd MMM, yyyy', { timeZone: 'Asia/Kolkata' });
-  //       return { ...blog, formattedDate };
-  //     });
-  //     return { props: { blogs: formattedBlogs } };
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     return { props: { blogs: [] } };
-  //   }
-  // }
-export async function getStaticProps() {
+
+  export async function getStaticProps() {
   try {
-    const res = await fetch(`${process.env.API_URL}/api/some-data`);
-    if (!res.ok) throw new Error(`Failed to fetch data: ${res.status}`);
-    const data = await res.json();
+    const data = await listBlogsWithCategoriesAndTags();
 
     return {
-      props: { data },
+      props: {
+        blogs: data.blogs || [],
+      },
+      // Optional: Enable ISR to update the page every 10 seconds
+      revalidate: 10,
     };
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error('Error fetching blogs:', error);
     return {
-      props: { data: [] }, // fallback empty array or default data
+      props: {
+        blogs: [],
+      },
     };
   }
 }
+
 
   
 export default Index;

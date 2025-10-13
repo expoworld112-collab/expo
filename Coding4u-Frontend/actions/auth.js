@@ -82,7 +82,7 @@ export const preSignup = async (user) => {
 
 export const signup = async user => {
     try {
-        const response = await fetch(`${API}/signup`, {
+        const response = await fetch(`${API}/api/account-activate`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -90,11 +90,14 @@ export const signup = async user => {
             },
             body: JSON.stringify(user)
         });
+
         return await response.json();
     } catch (err) {
-        return console.log(err);
+        console.error("❌ Signup error:", err);
+        return { error: "Activation failed. Try again." };
     }
 };
+
 
 export const signin = async user => {
     try {
