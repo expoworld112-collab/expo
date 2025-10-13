@@ -67,7 +67,7 @@ export const preSignup = async (req, res) => {
     });
 }
 
-
+}
 
 
 export const signup = async (req, res) => {
