@@ -55,10 +55,18 @@ export const preSignup = async (req, res) => {
         });
 
     } catch (err) {
-        console.log(err);
-        res.status(400).json({ error: errorHandler(err) });
-    }
-};
+    console.error("🔥 preSignup error:", err);
+
+    const fallbackError =
+        err && err.message
+            ? err.message
+            : "Something went wrong during pre-signup";
+
+    res.status(400).json({
+        error: fallbackError
+    });
+}
+
 
 
 
