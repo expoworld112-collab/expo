@@ -1,5 +1,5 @@
 // export const FRONTEND = "https://expoworld-frontend.vercel.app";
-export const FRONTEND = "https://coding4u-frontend.vercel.app";
+export const API = "https://backend-coding4u-1.vercel.app/api";
 
 
 
