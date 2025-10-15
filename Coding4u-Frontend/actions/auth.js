@@ -44,32 +44,64 @@ export const preSignup = async (user) => {
   }
 };
 
-export const signup = async (user) => {
+// export const signup = async (user) => {
+//   try {
+//     const url = `${API}/account-activate`;
+//     console.log("📡 Calling API:", url);
+
+//     const response = await fetch(url, {
+//       method: "POST",
+//       headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(user),
+//     });
+
+//     const text = await response.text();
+//     console.log("🧾 Raw response:", text);
+
+//     if (text.trim().startsWith("<!DOCTYPE")) {
+//       throw new Error(
+//         "Received HTML instead of JSON. Likely wrong API endpoint."
+//       );
+//     }
+
+//     const json = JSON.parse(text);
+//     if (!response.ok) throw new Error(json.error || "Activation failed.");
+//     return json;
+//   } catch (err) {
+//     console.error("❌ Signup error:", err.message);
+//     return { error: err.message || "Activation failed. Try again." };
+//   }
+// };
+
+
+export const signup = async user => {
   try {
     const url = `${API}/account-activate`;
-    console.log("📡 Calling API:", url);
+    console.log("📡 Sending request to:", url);
 
     const response = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(user),
+      body: JSON.stringify(user)
     });
 
     const text = await response.text();
     console.log("🧾 Raw response:", text);
 
-    if (text.trim().startsWith("<!DOCTYPE")) {
-      throw new Error(
-        "Received HTML instead of JSON. Likely wrong API endpoint."
-      );
+    if (text.trim().startsWith('<!DOCTYPE')) {
+      throw new Error("❌ Received HTML instead of JSON. Likely wrong API endpoint.");
     }
 
     const json = JSON.parse(text);
-    if (!response.ok) throw new Error(json.error || "Activation failed.");
+    if (!response.ok) throw new Error(json.error || 'Activation failed.');
     return json;
+
   } catch (err) {
     console.error("❌ Signup error:", err.message);
     return { error: err.message || "Activation failed. Try again." };
