@@ -6,6 +6,7 @@ export const APP_NAME = "EXPOWORLD.COM";
 export const DISQUS_SHORTNAME = "my-cms-7";
 export const APP_DESCRIPTION = "Expo World WEBSITE IS THE PLATFORM WHERE USER CAN SHARE THE RESOURCE.";
 export const MY_API = "https://backend-coding4u-1.vercel.app";
+console.log("✅ Loaded API:", process.env.NEXT_PUBLIC_API_URL);
 
 
 // export const API = 'http://localhost:8000/api';
