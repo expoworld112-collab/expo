@@ -26,21 +26,21 @@ const ActivateAccount = ({ router }) => {
         }
     }, [router]);
 
-    const clickSubmit = e => {
-        e.preventDefault();
-        setValues({ ...values, loading: true, error: false });
-        signup({ token }).then(data => {
-            if (data.error) {
-                setValues({ ...values, error: data.error, loading: false, showButton: false });
-            } else {
-                setValues({ ...values, loading: false, success: true, showButton: false });
-            }
+const clickSubmit = (e) => {
+  e.preventDefault();
+  console.log("🧪 Submitting activation with token:", values.token);
 
+  setValues({ ...values, loading: true, error: false });
 
+  signup({ token: values.token }).then(data => {
+    if (data.error) {
+      setValues({ ...values, error: data.error, loading: false, showButton: false });
+    } else {
+      setValues({ ...values, loading: false, success: true, showButton: false });
+    }
+  });
+};
 
-            
-        });
-    };
 
     const showLoading = () => (loading ? <h2>Loading...</h2> : '');
     const showError = () => (error ? <div className={styles.showError}>{error}</div> : '');
