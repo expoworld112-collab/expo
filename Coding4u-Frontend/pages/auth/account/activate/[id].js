@@ -18,28 +18,41 @@ const ActivateAccount = ({ router }) => {
 
     const { name, token, error, loading, success, showButton } = values;
 
-    useEffect(() => {
-        let token = router.query.id;
-        if (token) {
-            const { name } = jwt.decode(token);
-            setValues({ ...values, name, token });
-        }
-    }, [router]);
+  useEffect(() => {
+    const token = router.query.id;
+    if (token) {
+        const { name } = jwt.decode(token) || {};
+        setValues(prev => ({
+            ...prev,
+            name,
+            token
+        }));
+    }
+}, [router.query.id]);
 
 const clickSubmit = (e) => {
   e.preventDefault();
   console.log("🧪 Submitting activation with token:", values.token);
 
+  if (!values.token) {
+    console.error("❌ Token is missing!");
+    setValues({ ...values, error: "Token is missing in the URL.", loading: false });
+    return;
+  }
+
   setValues({ ...values, loading: true, error: false });
 
   signup({ token: values.token }).then(data => {
     if (data.error) {
+      console.error("❌ Activation error:", data.error);
       setValues({ ...values, error: data.error, loading: false, showButton: false });
     } else {
+      console.log("✅ Activation success");
       setValues({ ...values, loading: false, success: true, showButton: false });
     }
   });
 };
+
 
 
     const showLoading = () => (loading ? <h2>Loading...</h2> : '');

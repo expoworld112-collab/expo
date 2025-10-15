@@ -46,7 +46,7 @@ export const preSignup = async (user) => {
 
 export const signup = async user => {
     try {
-        const response = await fetch(`${API}/api/account-activate`, {
+        const response = await fetch(`${API}/account-activate`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -55,13 +55,18 @@ export const signup = async user => {
             body: JSON.stringify(user)
         });
 
-        return await response.json();
+        const text = await response.text();
+        console.log("🔍 Raw response text:", text);
+
+        const json = JSON.parse(text);
+        if (!response.ok) throw new Error(json.error || 'Activation failed.');
+
+        return json;
     } catch (err) {
-        console.error("❌ Signup error:", err);
-        return { error: "Activation failed. Try again." };
+        console.error("❌ Signup error:", err.message);
+        return { error: err.message || "Activation failed. Try again." };
     }
 };
-
 
 export const signin = async user => {
     try {
