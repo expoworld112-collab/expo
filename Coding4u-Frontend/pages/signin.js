@@ -9,4 +9,4 @@ const signin = () => {
   )
 }
 
-export default signin
+export default signin;

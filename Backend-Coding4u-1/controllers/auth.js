@@ -69,26 +69,35 @@ export const preSignup = async (req, res) => {
 
 }
 
+export const signup = async user => {
+  try {
+    const response = await fetch(`${API}/account-activate`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(user)
+    });
 
-export const signup = async (req, res) => {
-    const token = req.body.token;
-    if (token) {
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION);
+    const text = await response.text();
+console.log("📡 Calling API:", `${API}/account-activate`);
 
-            if (decoded) {
-                const { name, username, email, password } = jwt.decode(token);
-                const usernameurl = username.toLowerCase();
-                const profile = `${process.env.MAIN_URL}/profile/${usernameurl}`;
-                const user = new User({ name, email, password, profile, username });
-                await user.save();
-                res.json({ message: 'Signup success! Please sign in' });
-            }
-            else { res.status(401).json({ error: 'Expired link. Signup again' }); }
+    // Try parsing only if it looks like JSON
+    if (text.trim().startsWith('<!DOCTYPE')) {
+      throw new Error("Received HTML instead of JSON. Likely wrong API endpoint.");
+    }
 
-        } catch (err) { res.status(401).json({ error: 'Expired link. Signup again' }); }
-    } else { res.json({ message: 'Something went wrong. Try again' }); }
+    const json = JSON.parse(text);
+    if (!response.ok) throw new Error(json.error || 'Activation failed.');
+    return json;
+
+  } catch (err) {
+    console.error("❌ Signup error:", err.message);
+    return { error: err.message || "Activation failed. Try again." };
+  }
 };
+
 
 
 
