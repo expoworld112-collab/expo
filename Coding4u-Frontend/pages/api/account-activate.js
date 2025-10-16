@@ -63,7 +63,8 @@ export default function ActivateAccountPage() {
       return;
     }
 
-    fetch('/api/account-activate', {
+    fetch(fetch('https://your-backend-domain.com/api/account-activate')
+, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
