@@ -1,5 +1,4 @@
 // pages/api/account-activate.js
-
 import jwt from 'jsonwebtoken';
 import dbConnect from '../../utils/dbConnect';
 import User from '../../models/user';

@@ -1,13 +1,13 @@
 // pages/auth/account/activate/[id].js
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
-export default function ActivatePage() {
+export default function ActivateAccountPage() {
   const router = useRouter();
   const { id: token } = router.query;
 
-  const [message, setMessage] = useState('Activating...');
+  const [status, setStatus] = useState('Processing account activation...');
 
   useEffect(() => {
     if (!token) return;
@@ -15,18 +15,22 @@ export default function ActivatePage() {
     fetch('/api/account-activate', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ token })
+      body: JSON.stringify({ token }),
     })
       .then(res => res.json())
       .then(data => {
-        setMessage(data.message || data.error || 'Unknown response');
+        if (data.message) {
+          setStatus(`✅ ${data.message}`);
+        } else {
+          setStatus(`❌ ${data.error || 'Unknown error'}`);
+        }
       })
-      .catch(err => {
-        setMessage('Activation failed');
+      .catch(() => {
+        setStatus('❌ Activation failed. Network error.');
       });
   }, [token]);
 
-  return <p>{message}</p>;
+  return <div>{status}</div>;
 }
