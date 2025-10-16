@@ -1,48 +1,32 @@
+// pages/auth/account/activate/[id].js
 
-import jwt from 'jsonwebtoken';
-import dbConnect from '../../utils/dbConnect';  // your DB connection util
-import User from '../../models/user';  // your User model
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    // Only allow POST
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ error: `Method ${req.method} not allowed` });
-  }
+export default function ActivatePage() {
+  const router = useRouter();
+  const { id: token } = router.query;
 
-  try {
-    // Connect to database
-    await dbConnect();
+  const [message, setMessage] = useState('Activating...');
 
-    const { token } = req.body;
-    if (!token) {
-      return res.status(400).json({ error: 'Token is required' });
-    }
+  useEffect(() => {
+    if (!token) return;
 
-    // Verify token
-    jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION, async (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ error: 'Invalid or expired token' });
-      }
-      const { name, email } = decoded;
+    fetch('/api/account-activate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setMessage(data.message || data.error || 'Unknown response');
+      })
+      .catch(err => {
+        setMessage('Activation failed');
+      });
+  }, [token]);
 
-      // Find user
-      let user = await User.findOne({ email });
-      if (!user) {
-        return res.status(400).json({ error: 'User not found' });
-      }
-      if (user.isActivated) {
-        return res.status(400).json({ error: 'Account already activated' });
-      }
-
-      // Activate the user
-      user.isActivated = true;
-      await user.save();
-
-      return res.status(200).json({ message: 'Account has been activated' });
-    });
-  } catch (err) {
-    console.error('Activation error:', err);
-    return res.status(500).json({ error: 'Server error during account activation' });
-  }
+  return <p>{message}</p>;
 }
