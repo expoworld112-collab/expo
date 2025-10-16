@@ -19,10 +19,12 @@ export const handleResponse = response => {
 
 
 
-
 export const preSignup = async (user) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
   try {
-    console.log("📤 Sending to pre-signup API:", user); // <-- Add this
+    console.log("📤 Sending to pre-signup API:", user);
 
     const res = await fetch(`${API}/pre-signup`, {
       method: "POST",
@@ -30,7 +32,10 @@ export const preSignup = async (user) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(user),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeout); // clear if successful
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -39,10 +44,11 @@ export const preSignup = async (user) => {
 
     return await res.json();
   } catch (err) {
-    console.error("❌ Error in preSignup:", err);
+    console.error("❌ Error in preSignup:", err.name === "AbortError" ? "Request timed out" : err);
     return { error: "Something went wrong. Please try again." };
   }
 };
+
 
 // export const signup = async (user) => {
 //   try {
