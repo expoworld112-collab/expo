@@ -1,4 +1,3 @@
-import Blog from "../models/blog.js";
 import { errorHandler } from "../helpers/dbErrorHandler.js";
 import slugify from "slugify";
 import User from "../models/user.js";
