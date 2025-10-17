@@ -105,22 +105,6 @@ export const activateAccount = async (req, res) => {
       return res.status(400).json({ error: "Account already exists. Please sign in." });
     }
 
-    // Optionally, check that token matches saved pending activation, etc.
-
-    // Hash the password: *** you must have stored password somewhere securely ***
-    // For this approach, you’d need to have stored the password in a temporary store
-    // associated with token or have used a different mechanism.
-
-    // Example: (assuming you had stored temp password with token)
-    // const temp = await PendingActivation.findOne({ token });
-    // if (!temp) throw new Error("No matching activation found");
-    // const hashed = await bcrypt.hash(temp.password, SALT_ROUNDS);
-
-    // But since we did NOT include password in token, you need that store.
-
-    // Let's assume you did include hashed password in token (less ideal), or you had saved it encrypted
-
-    // For demonstration, assume `payload.passwordHash` is there (hashed already)
     const passwordHash = payload.passwordHash; // hypothetical
     if (!passwordHash) {
       return res
@@ -192,5 +176,45 @@ export const signin = async (req, res) => {
     return res.status(500).json({ error: "Signin failed. Try again." });
   }
 };
+export const authMiddleware = async (req, res, next) => {
+  try {
+    const userId = req.auth._id;
+    const user = await User.findById(userId).exec();
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+    req.profile = user;
+    next();
+  } catch (err) {
+    console.error("authMiddleware error:", err);
+    return res.status(500).json({ error: "Could not authenticate user" });
+  }
+};
+
+// Check if user is admin
+export const adminMiddleware = async (req, res, next) => {
+  try {
+    const userId = req.auth._id;
+    const user = await User.findById(userId).exec();
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ error: "Admin resource. Access denied." });
+    }
+    req.profile = user;
+    next();
+  } catch (err) {
+    console.error("adminMiddleware error:", err);
+    return res.status(500).json({ error: "Admin check failed" });
+  }
+};
+
+// Check if user can update/delete a blog (example logic)
+export const canUpdateDeleteBlog = (req, res, next) => {
+  const authorized = req.profile && req.auth && req.profile._id.toString() === req.auth._id;
+  if (!authorized) {
+    return res.status(403).json({ error: "User not authorized" });
+  }
+  next();
+};
+
 
 // ... signout, requireSignin, authMiddleware, adminMiddleware remain largely similar
