@@ -1,6 +1,6 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs';
 import nodemailer from "nodemailer";
 import { body, validationResult } from "express-validator";
 import { errorHandler } from "../helpers/dbErrorHandler.js";
