@@ -1,7 +1,12 @@
 import express from "express";
 const router = express.Router();
 import { create, list, list2, listAllBlogsCategoriesTags, read, remove, update, relatedposts, listSearch, listByUser, allblogs, feeds, allblogslugs } from "../controllers/blog.js"
-import { requireSignin, adminMiddleware, authMiddleware, canUpdateDeleteBlog } from "../controllers/auth.js"
+import {
+  requireSignin,
+  adminMiddleware,
+  authMiddleware,
+  canUpdateDeleteBlog
+} from "../controllers/auth.js";
 
 router.post('/blog', requireSignin, adminMiddleware, create);
 router.get('/blogs', list);
