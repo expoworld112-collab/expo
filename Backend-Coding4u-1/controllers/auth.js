@@ -1,9 +1,9 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import { body, validationResult } from "express-validator";
-import { errorHandler } from "../helpers/dbErrorHandler.js";
+import expressJwt from "express-jwt";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -12,8 +12,8 @@ const transporter = nodemailer.createTransport({
   tls: { rejectUnauthorized: false },
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  }
+    pass: process.env.SMTP_PASS,
+  },
 });
 
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || "12");
@@ -26,19 +26,28 @@ export const validateSignup = [
     .trim()
     .isLength({ min: 3, max: 30 })
     .withMessage("Username must be 3–30 characters")
-    .matches(/^[A-Za-z0-9_]+$/).withMessage("Username format invalid"),
+    .matches(/^[A-Za-z0-9_]+$/)
+    .withMessage("Username format invalid"),
   body("password")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters"),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array().map(e => e.msg) });
+      return res.status(400).json({ errors: errors.array().map((e) => e.msg) });
     }
     next();
-  }
+  },
 ];
 
+// Protect routes - middleware that verifies JWT token
+export const requireSignin = expressJwt({
+  secret: process.env.JWT_SECRET,
+  algorithms: ["HS256"],
+  userProperty: "auth",
+});
+
+// Pre-signup: sends activation email with token
 export const preSignup = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
@@ -49,15 +58,14 @@ export const preSignup = async (req, res) => {
       return res.status(400).json({ error: "Email is already taken" });
     }
 
-    // Create a short-lived activation token (without password)
-    const payload = { name, username, email: lowerEmail };
-    const token = jwt.sign(payload, process.env.JWT_ACCOUNT_ACTIVATION, {
-      expiresIn: "10m"
-    });
+    // Hash password here to store in token (optional, but recommended)
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // **Persist a “pending activation” record** — optional but recommended
-    // Example:
-    // await PendingActivation.create({ email: lowerEmail, token });
+    // Create short-lived activation token including hashed password
+    const payload = { name, username, email: lowerEmail, passwordHash };
+    const token = jwt.sign(payload, process.env.JWT_ACCOUNT_ACTIVATION, {
+      expiresIn: "10m",
+    });
 
     const activationLink = `${process.env.MAIN_URL}/auth/account/activate/${token}`;
     const mailOptions = {
@@ -69,7 +77,7 @@ export const preSignup = async (req, res) => {
         <p><a href="${activationLink}">${activationLink}</a></p>
         <hr/>
         <p>This link expires in 10 minutes</p>
-      `
+      `,
     };
 
     await transporter.sendMail(mailOptions);
@@ -81,6 +89,7 @@ export const preSignup = async (req, res) => {
   }
 };
 
+// Activate account from token
 export const activateAccount = async (req, res) => {
   try {
     const { token } = req.body;
@@ -95,21 +104,17 @@ export const activateAccount = async (req, res) => {
       return res.status(400).json({ error: "Invalid or expired token" });
     }
 
-    const { name, username, email } = payload;
+    const { name, username, email, passwordHash } = payload;
 
     const lowerEmail = email.toLowerCase();
 
-    // Check if already activated / existing
     const userExists = await User.findOne({ email: lowerEmail });
     if (userExists) {
       return res.status(400).json({ error: "Account already exists. Please sign in." });
     }
 
-    const passwordHash = payload.passwordHash; // hypothetical
     if (!passwordHash) {
-      return res
-        .status(400)
-        .json({ error: "Password information missing. Activation failed." });
+      return res.status(400).json({ error: "Password information missing. Activation failed." });
     }
 
     const user = new User({
@@ -118,11 +123,10 @@ export const activateAccount = async (req, res) => {
       email: lowerEmail,
       password: passwordHash,
       isActivated: true,
-      activatedAt: new Date()
+      activatedAt: new Date(),
     });
-    await user.save();
 
-    // Optionally delete pending activation record
+    await user.save();
 
     // Issue login token:
     const authToken = jwt.sign(
@@ -134,7 +138,7 @@ export const activateAccount = async (req, res) => {
     return res.json({
       message: "Account activated successfully",
       token: authToken,
-      user: { name: user.name, email: user.email, username: user.username }
+      user: { name: user.name, email: user.email, username: user.username },
     });
   } catch (err) {
     console.error("🔥 activateAccount error:", err);
@@ -142,33 +146,37 @@ export const activateAccount = async (req, res) => {
   }
 };
 
+// Signin
 export const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const lowerEmail = email.toLowerCase();
+
     const user = await User.findOne({ email: lowerEmail }).exec();
     if (!user) {
-      return res
-        .status(400)
-        .json({ error: "User with that email does not exist. Please sign up." });
+      return res.status(400).json({ error: "User with that email does not exist. Please sign up." });
     }
-    // Check if user is activated
+
     if (!user.isActivated) {
       return res.status(400).json({ error: "Account not activated yet." });
     }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Email and password do not match." });
     }
+
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d"
+      expiresIn: "7d",
     });
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: 7 * 24 * 3600 * 1000
+      maxAge: 7 * 24 * 3600 * 1000,
     });
+
     const { _id, username, name, role } = user;
     return res.json({ token, user: { _id, username, name, email: lowerEmail, role } });
   } catch (err) {
@@ -176,6 +184,14 @@ export const signin = async (req, res) => {
     return res.status(500).json({ error: "Signin failed. Try again." });
   }
 };
+
+// Signout
+export const signout = (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Signout successful" });
+};
+
+// Auth middleware to get user profile
 export const authMiddleware = async (req, res, next) => {
   try {
     const userId = req.auth._id;
@@ -191,7 +207,7 @@ export const authMiddleware = async (req, res, next) => {
   }
 };
 
-// Check if user is admin
+// Admin middleware to allow only admins
 export const adminMiddleware = async (req, res, next) => {
   try {
     const userId = req.auth._id;
@@ -207,14 +223,5 @@ export const adminMiddleware = async (req, res, next) => {
   }
 };
 
-// Check if user can update/delete a blog (example logic)
-export const canUpdateDeleteBlog = (req, res, next) => {
-  const authorized = req.profile && req.auth && req.profile._id.toString() === req.auth._id;
-  if (!authorized) {
-    return res.status(403).json({ error: "User not authorized" });
-  }
-  next();
-};
+// Password reset functions can go here too, if needed...
 
-
-// ... signout, requireSignin, authMiddleware, adminMiddleware remain largely similar
