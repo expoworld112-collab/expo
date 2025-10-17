@@ -261,3 +261,62 @@ export const resetPassword = async (req, res) => {
     }
 };
 
+export const activateAccount = async (req, res) => {
+  try {
+    const { token } = req.body;  // or maybe via `req.params` or `req.query`
+    if (!token) {
+      return res.status(400).json({ error: "No activation token provided" });
+    }
+
+    // Verify the token
+    let payload;
+    try {
+      payload = jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION);
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    const { name, username, email, password } = payload;
+
+    // Check again: maybe the user already exists / already activated
+    let user = await User.findOne({ email: email.toLowerCase() });
+    if (user) {
+      return res.status(400).json({ error: "User already exists or already activated" });
+    }
+
+    // Hash password before storing
+    const hashed = await hashPassword(password);  // use bcrypt / argon2 etc.
+
+    // Create the user in DB
+    user = new User({
+      name,
+      username,
+      email: email.toLowerCase(),
+      password: hashed,
+      isActivated: true,       // or some "active" field
+      activatedAt: new Date(), // optional
+    });
+
+    await user.save();
+
+    // Optionally, you could issue a login token now
+    const authToken = jwt.sign(
+      { _id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    return res.json({
+      message: "Account activated successfully",
+      token: authToken,
+      user: {
+        name: user.name,
+        email: user.email,
+        username: user.username,
+      }
+    });
+  } catch (err) {
+    console.error("🔥 activateAccount error:", err);
+    res.status(500).json({ error: "Server error during account activation" });
+  }
+};
