@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import { body, validationResult } from "express-validator";
 import expressJwt from "express-jwt";
+import { requireSignin } from '../controllers/auth.js';
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
